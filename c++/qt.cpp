@@ -29,6 +29,10 @@ AisStreamClient::AisStreamClient(QObject* parent)
     connect(&m_webSocket, QOverload<const QList<QSslError>&>::of(&QWebSocket::sslErrors), this, &AisStreamClient::onSslErrors);
     QSslConfiguration sslConfiguration;
     m_webSocket.setSslConfiguration(sslConfiguration);
+    // NOTE: aisstream.io requires compression to serve full message bandwidth, and
+    // QWebSocket does not implement permessage-deflate, so this client cannot
+    // negotiate it. See https://bugreports.qt.io/browse/QTBUG-44552 — the Boost.Beast
+    // example in this directory does support compression.
     m_webSocket.open(QUrl("wss://stream.aisstream.io/v0/stream"));
 }
 

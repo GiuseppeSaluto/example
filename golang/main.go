@@ -11,7 +11,12 @@ import (
 func main() {
 
 	url := "wss://stream.aisstream.io/v0/stream"
-	ws, _, err := websocket.DefaultDialer.Dial(url, nil)
+
+	// Enables compression, which aisstream.io requires to serve full message bandwidth.
+	dialer := *websocket.DefaultDialer
+	dialer.EnableCompression = true
+
+	ws, _, err := dialer.Dial(url, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -34,9 +39,11 @@ func main() {
 		}
 		var packet aisstream.AisStreamMessage
 
-		err = json.Unmarshal(p, &packet)
-		if err != nil {
-			log.Fatalln(err)
+		if err := json.Unmarshal(p, &packet); err != nil {
+			// The server's first message is a SubscriptionConfirmation, which the
+			// AIS message models do not describe. Skip anything that is not an
+			// AIS message rather than treating it as fatal.
+			continue
 		}
 
 		var shipName string

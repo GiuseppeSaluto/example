@@ -5,7 +5,9 @@ from datetime import datetime, timezone
 
 async def connect_ais_stream():
 
-    async with websockets.connect("wss://stream.aisstream.io/v0/stream") as websocket:
+    # Enables compression, which aisstream.io requires to serve full message bandwidth.
+    async with websockets.connect("wss://stream.aisstream.io/v0/stream",
+                                  compression="deflate") as websocket:
         subscribe_message = {"APIKey": "<YOUR API KEY>", "BoundingBoxes": [[[-11, 178], [30, 74]]]}
 
         subscribe_message_json = json.dumps(subscribe_message)

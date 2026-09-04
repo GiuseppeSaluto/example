@@ -12,7 +12,10 @@ ssl_context.verify_mode = ssl.CERT_NONE
 
 async def connect_ais_stream():
 
-    async with websockets.connect("wss://stream.aisstream.io/v0/stream",ssl=ssl_context) as websocket:
+    # Enables compression, which aisstream.io requires to serve full message bandwidth.
+    async with websockets.connect("wss://stream.aisstream.io/v0/stream",
+                                  ssl=ssl_context,
+                                  compression="deflate") as websocket:
         subscribe_message = {"APIKey": '<YOUR API KEY>', "BoundingBoxes": [[[-180, -90], [180, 90]]]}
 
         subscribe_message_json = json.dumps(subscribe_message)

@@ -1,5 +1,8 @@
 const container = document.getElementById("position-data");
 
+// Browsers negotiate compression automatically and expose no option to control
+// it, so nothing is required here. aisstream.io requires compression to serve
+// full message bandwidth.
 const socket = new WebSocket("ws://localhost:3333/v0/stream");
 
 socket.onopen = function (event) {

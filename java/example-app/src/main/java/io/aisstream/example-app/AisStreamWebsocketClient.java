@@ -7,6 +7,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
+import org.java_websocket.drafts.Draft_6455;
+import org.java_websocket.extensions.permessage_deflate.PerMessageDeflateExtension;
 import org.java_websocket.handshake.ServerHandshake;
 
 /**
@@ -16,7 +18,15 @@ import org.java_websocket.handshake.ServerHandshake;
 public class AisStreamWebsocketClient extends WebSocketClient {
 
   public AisStreamWebsocketClient(URI serverURI) {
-    super(serverURI);
+    super(serverURI, compressedDraft());
+  }
+
+  // Enables compression, which aisstream.io requires to serve full message bandwidth.
+  private static Draft compressedDraft() {
+    PerMessageDeflateExtension deflate = new PerMessageDeflateExtension();
+    deflate.setClientNoContextTakeover(true);
+    deflate.setServerNoContextTakeover(true);
+    return new Draft_6455(deflate);
   }
 
   @Override

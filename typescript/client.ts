@@ -1,7 +1,10 @@
 import WebSocket from "ws";
 
 
-const socket = new WebSocket("wss://stream.aisstream.io/v0/stream")
+// Enables compression, which aisstream.io requires to serve full message bandwidth.
+const socket = new WebSocket("wss://stream.aisstream.io/v0/stream", {
+    perMessageDeflate: true
+})
 
 socket.onopen = function (_) {
     let subscriptionMessage = {
@@ -12,5 +15,6 @@ socket.onopen = function (_) {
 };
 
 socket.onmessage = function (event) {
-    ();
+    const aisMessage = JSON.parse(event.data.toString());
+    console.log(aisMessage);
 };

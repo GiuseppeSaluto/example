@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class AISStreamWebsocketClient {
@@ -8,9 +10,15 @@ class AISStreamWebsocketClient {
   AISStreamWebsocketClient(this._serverUri);
 
   void connect() async {
-    final channel = WebSocketChannel.connect(
-      Uri.parse(_serverUri),
+    // Enables compression, which aisstream.io requires to serve full message bandwidth.
+    final socket = await WebSocket.connect(
+      _serverUri,
+      compression: const CompressionOptions(
+        clientNoContextTakeover: true,
+        serverNoContextTakeover: true,
+      ),
     );
+    final WebSocketChannel channel = IOWebSocketChannel(socket);
     await channel.ready;
     channel.stream.listen(onMessage);
     channel.sink.add(

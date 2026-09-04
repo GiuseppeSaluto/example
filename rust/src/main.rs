@@ -10,6 +10,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let aisstream_api_key: String = std::env::var("AISSTREAM_API_KEY")?;
 
     // WebSocket
+    //
+    // NOTE: aisstream.io requires compression to serve full message bandwidth, and
+    // tungstenite does not implement permessage-deflate, so this client cannot
+    // negotiate it. See https://github.com/snapview/tungstenite-rs/issues/2 —
+    // until that lands, a crate with permessage-deflate support is needed.
     println!("Connecting `{aisstream_api_url}`");
     let (mut socket, _) = tungstenite::connect(aisstream_api_url)?;
 

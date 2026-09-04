@@ -94,6 +94,13 @@ public:
         // Set suggested timeout settings for the websocket
         m_ws.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::client));
 
+        // Enables compression, which aisstream.io requires to serve full message bandwidth.
+        boost::beast::websocket::permessage_deflate pmd;
+        pmd.client_enable = true;
+        pmd.client_no_context_takeover = true;
+        pmd.server_no_context_takeover = true;
+        m_ws.set_option(pmd);
+
         // Set a decorator to change the User-Agent of the handshake
         m_ws.set_option(boost::beast::websocket::stream_base::decorator([](boost::beast::websocket::request_type& req)
         {
